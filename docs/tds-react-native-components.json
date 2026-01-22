@@ -1,0 +1,863 @@
+{
+  "metadata": {
+    "title": "TDS React Native 완전 컴포넌트 가이드",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-21",
+    "source": "https://tossmini-docs.toss.im/tds-react-native/",
+    "description": "TDS React Native의 모든 컴포넌트, Foundation, 사용 예제를 포함한 완전한 레퍼런스"
+  },
+
+  "navigation": {
+    "introduction": [
+      "/tds-react-native/",
+      "/tds-react-native/start/"
+    ],
+    "foundation": [
+      "/tds-react-native/foundation/colors/",
+      "/tds-react-native/foundation/typography/"
+    ],
+    "components": {
+      "displayLayout": [
+        "Amount Top",
+        "Asset",
+        "Board Row",
+        "Gradient",
+        "Grid List",
+        "Shadow"
+      ],
+      "inputControls": [
+        "Button",
+        "Checkbox",
+        "Radio",
+        "Switch",
+        "Text Field",
+        "Search Field",
+        "Dropdown",
+        "Keypad",
+        "Numeric Spinner"
+      ],
+      "navigation": [
+        "Navbar",
+        "Tab",
+        "Segmented Control",
+        "Stepper"
+      ],
+      "feedback": [
+        "Badge",
+        "Toast",
+        "Loader",
+        "Progress Bar",
+        "Skeleton",
+        "Result",
+        "Error Page"
+      ],
+      "dataDisplay": [
+        "List",
+        "List Header",
+        "List Footer",
+        "List Row",
+        "Table Row",
+        "Post",
+        "Carousel",
+        "Rating",
+        "Slider"
+      ],
+      "dialogsOverlays": [
+        "Dialog",
+        "Bottom Info"
+      ],
+      "typography": [
+        "Highlight",
+        "Border"
+      ],
+      "specialized": [
+        "Icon Button",
+        "Text Button",
+        "Amount Top",
+        "Asset"
+      ],
+      "charts": [
+        "Bar Chart"
+      ]
+    }
+  },
+
+  "foundation": {
+    "colors": {
+      "overview": "TDS는 디자이너와 개발자가 일관된 UI를 구현할 수 있도록 통합된 컬러 네이밍을 제공합니다.",
+      "usage": "import { colors } from '@toss/tds-react-native';\n<View style={{ backgroundColor: colors.blue500 }} />",
+      "primaryColors": {
+        "grey": {
+          "50": "#f9fafb",
+          "100": "#f2f4f6",
+          "200": "#e5e8eb",
+          "300": "#d1d6db",
+          "400": "#b0b8c1",
+          "500": "#8b95a1",
+          "600": "#6b7684",
+          "700": "#4e5968",
+          "800": "#333d4b",
+          "900": "#191f28"
+        },
+        "blue": {
+          "50": "#e8f3ff",
+          "100": "#c9e2ff",
+          "200": "#90c2ff",
+          "300": "#64a8ff",
+          "400": "#4593fc",
+          "500": "#3182f6",
+          "600": "#2272eb",
+          "700": "#1b64da",
+          "800": "#1957c2",
+          "900": "#194aa6"
+        },
+        "red": {
+          "50": "#ffeeee",
+          "100": "#ffcfcf",
+          "200": "#ffa2a2",
+          "300": "#ff7d7d",
+          "400": "#fa5252",
+          "500": "#f04452",
+          "600": "#e03c4b",
+          "700": "#d13239",
+          "800": "#c22727",
+          "900": "#a51926"
+        }
+      },
+      "extendedColors": {
+        "orange": {
+          "50": "#fff3e0",
+          "100": "#ffe0b2",
+          "200": "#ffca7f",
+          "300": "#ffb84d",
+          "400": "#ffa621",
+          "500": "#ff9500",
+          "600": "#f58800",
+          "700": "#e45600",
+          "800": "#cc3d00",
+          "900": "#b12500"
+        },
+        "yellow": {
+          "50": "#fff9e7",
+          "100": "#ffefbe",
+          "200": "#ffe69a",
+          "300": "#ffdc75",
+          "400": "#ffd158",
+          "500": "#ffc73a",
+          "600": "#fabc15",
+          "700": "#eba506",
+          "800": "#dd7d02",
+          "900": "#c26202"
+        },
+        "green": {
+          "50": "#f0faf6",
+          "100": "#d5f2e5",
+          "200": "#ade9d1",
+          "300": "#88dfbc",
+          "400": "#5fd4a7",
+          "500": "#3bc99a",
+          "600": "#1dbe8c",
+          "700": "#13a870",
+          "800": "#048c58",
+          "900": "#027648"
+        },
+        "teal": {
+          "50": "#edf8f8",
+          "100": "#d0edee",
+          "200": "#a7e1e3",
+          "300": "#82d4d8",
+          "400": "#54c4cb",
+          "500": "#2eb7bf",
+          "600": "#1baab2",
+          "700": "#0e979f",
+          "800": "#007e86",
+          "900": "#076565"
+        },
+        "purple": {
+          "50": "#f9f0fc",
+          "100": "#eed9f8",
+          "200": "#e3bef4",
+          "300": "#d49aed",
+          "400": "#c77be6",
+          "500": "#bb5ddf",
+          "600": "#ad47d2",
+          "700": "#9a2fbb",
+          "800": "#8320a1",
+          "900": "#65237b"
+        }
+      },
+      "opacityVariants": {
+        "description": "Grey opacity colors use base color with transparency",
+        "base": "#001733-#020913",
+        "range": "0.02 to 0.91",
+        "tokens": "greyOpacity50 ~ greyOpacity900"
+      },
+      "semanticColors": {
+        "background": "#FFFFFF",
+        "greyBackground": "#f2f4f6",
+        "layeredBackground": "#FFFFFF",
+        "floatedBackground": "#FFFFFF"
+      },
+      "namingConvention": "colors.[colorName][shade] where shade ranges from 50 (lightest) to 900 (darkest)"
+    },
+    "typography": {
+      "overview": "TDS는 플랫폼 간 일관된 사용자 경험을 보장하면서 접근성 기능(큰 텍스트 모드)을 지원하는 계층적 타이포그래피 시스템을 제공합니다.",
+      "fontStack": "Toss Product Sans, Tossface, SF Pro KR, SF Pro Display, Roboto, Helvetica Neue, Arial",
+      "scale": {
+        "typography1": {
+          "fontSize": "30px",
+          "lineHeight": "40px",
+          "purpose": "Very large headings"
+        },
+        "typography3": {
+          "fontSize": "22px",
+          "lineHeight": "31px",
+          "purpose": "Standard headings"
+        },
+        "typography5": {
+          "fontSize": "17px",
+          "lineHeight": "25.5px",
+          "purpose": "Regular body text"
+        },
+        "typography7": {
+          "fontSize": "13px",
+          "lineHeight": "19.5px",
+          "purpose": "Small body text"
+        },
+        "subTypography8": {
+          "fontSize": "19px",
+          "lineHeight": "28px",
+          "purpose": "Slightly larger body text"
+        }
+      },
+      "accessibility": {
+        "ios": {
+          "scaling": "Fixed levels",
+          "levels": {
+            "Large": "100% (baseline)",
+            "xLarge": "110%",
+            "xxLarge": "120%",
+            "xxxLarge": "135%",
+            "A11y_xxxLarge": "310%"
+          }
+        },
+        "android": {
+          "scaling": "Continuous from 100%",
+          "formula": "Font Size = Base Size × NN% × 0.01"
+        },
+        "criticalGuidance": "Do not hardcode values directly. This allows dynamic adjustment when larger text mode is enabled."
+      },
+      "principles": [
+        "Maintain visual hierarchy through font scale abstraction",
+        "Support cross-platform consistency (iOS, Android, web)",
+        "Enable accessibility without compromising design integrity",
+        "Use token-based approach rather than fixed pixel values"
+      ]
+    }
+  },
+
+  "components": {
+    "Toast": {
+      "description": "사용자에게 짧은 메시지를 일시적으로 표시하는 컴포넌트. 작업 확인이나 상태 변경을 알립니다.",
+      "props": {
+        "open": {
+          "type": "boolean",
+          "required": true,
+          "description": "Toast 표시 여부 제어"
+        },
+        "text": {
+          "type": "string",
+          "required": true,
+          "description": "메시지 내용"
+        },
+        "onClose": {
+          "type": "() => void",
+          "required": true,
+          "description": "닫힐 때 호출되는 콜백"
+        },
+        "position": {
+          "type": "'top' | 'bottom'",
+          "default": "'bottom'",
+          "description": "표시 위치"
+        },
+        "duration": {
+          "type": "number",
+          "default": "3",
+          "description": "표시 시간 (초)"
+        },
+        "icon": {
+          "type": "React.ReactNode",
+          "description": "왼쪽 아이콘"
+        },
+        "button": {
+          "type": "React.ReactNode",
+          "description": "액션 버튼 (bottom position만)"
+        },
+        "bottomOffset": {
+          "type": "number",
+          "default": "20",
+          "description": "하단 여백 (px)"
+        },
+        "onEntered": {
+          "type": "() => void",
+          "description": "Toast 표시 후 호출"
+        },
+        "onExited": {
+          "type": "() => void",
+          "description": "Toast 사라진 후 호출"
+        }
+      },
+      "examples": {
+        "basic": "<Toast\n  open={isOpen}\n  text=\"저장되었어요\"\n  onClose={() => setIsOpen(false)}\n/>",
+        "withIcon": "<Toast\n  open={isOpen}\n  text=\"아이콘이 있는 Toast\"\n  icon={<Toast.Icon name=\"icn-attention-color\" />}\n  onClose={() => setIsOpen(false)}\n/>",
+        "withButton": "<Toast\n  open={isOpen}\n  text=\"작업이 완료되었어요\"\n  position=\"bottom\"\n  button={<Toast.Button text=\"확인\" onPress={() => setIsOpen(false)} />}\n  onClose={() => setIsOpen(false)}\n/>",
+        "customDuration": "<Toast\n  open={isOpen}\n  text=\"5초 동안 표시\"\n  duration={5}\n  position=\"bottom\"\n  bottomOffset={40}\n  onClose={() => setIsOpen(false)}\n/>"
+      },
+      "features": [
+        "Toast.Icon 또는 Toast.LottieIcon을 통한 아이콘 통합",
+        "버튼 있을 때 5초, 없을 때 3초 기본 지속 시간",
+        "액션 버튼은 bottom position에서만 사용 가능",
+        "레이아웃 유연성을 위한 하단 마진 커스터마이징"
+      ]
+    },
+    "Button": {
+      "description": "사용자가 작업을 트리거하거나 이벤트를 실행할 수 있게 하는 핵심 UI 요소. 폼 제출, 다이얼로그 열기, 작업 취소, 삭제 등에 사용됩니다.",
+      "variants": {
+        "fill": "높은 채도로 시각적으로 눈에 띄는 스타일. 주요 액션 강조에 이상적",
+        "weak": "낮은 채도의 부드러운 스타일. 보조 또는 덜 중요한 액션에 적합. 반투명 디자인으로 배경색이 은은하게 보입니다"
+      },
+      "sizes": ["tiny", "medium", "large", "big"],
+      "displayModes": {
+        "block": "버튼이 콘텐츠 너비로 래핑",
+        "full": "부모 컨테이너 전체 너비 차지"
+      },
+      "states": {
+        "loading": "로딩 스피너 표시 및 사용자 상호작용 방지",
+        "disabled": "클릭 방지 및 불투명도 감소로 사용 불가 표시"
+      },
+      "props": {
+        "children": {
+          "type": "ReactNode",
+          "required": true,
+          "description": "버튼 내부에 표시되는 콘텐츠"
+        },
+        "type": {
+          "type": "string",
+          "default": "'primary'",
+          "description": "컬러 변형: primary, danger, light, dark"
+        },
+        "style": {
+          "type": "string",
+          "default": "'fill'",
+          "description": "시각적 스타일: fill 또는 weak"
+        },
+        "size": {
+          "type": "string",
+          "default": "'big'",
+          "description": "버튼 크기"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "상호작용 방지"
+        },
+        "loading": {
+          "type": "boolean",
+          "default": "false",
+          "description": "로딩 상태 표시"
+        },
+        "onPress": {
+          "type": "function",
+          "description": "버튼 클릭 시 콜백"
+        },
+        "display": {
+          "type": "string",
+          "default": "'block'",
+          "description": "레이아웃 모드: block 또는 full"
+        }
+      },
+      "colorTypes": ["primary (blue)", "danger (red)", "light", "dark"]
+    },
+    "Dialog": {
+      "description": "사용자에게 중요한 정보를 전달하거나 확인을 요청하는 컴포넌트. AlertDialog와 ConfirmDialog 두 가지 변형 제공.",
+      "variants": {
+        "AlertDialog": {
+          "description": "정보를 제공하고 단일 버튼으로 사용자 인지를 요청. 알림 및 확인에 이상적",
+          "requiredProps": ["open", "title", "onClose"],
+          "optionalProps": ["description", "content", "buttonText", "closeOnDimmerClick", "onExited", "onEntered"],
+          "example": "AlertDialog({ title: '저장 완료', description: '변경사항이 저장되었어요' })\n// Promise 반환, 사용자 확인 시 resolve"
+        },
+        "ConfirmDialog": {
+          "description": "두 개의 액션 버튼으로 사용자 선택 요청. 취소/확인 워크플로우 지원",
+          "requiredProps": ["open", "title", "onClose", "leftButton", "rightButton"],
+          "optionalProps": ["description", "content", "closeOnDimmerClick", "onExited", "onEntered"],
+          "example": "ConfirmDialog({ title: '삭제 확인', leftButton: '취소', rightButton: '삭제' })\n// Boolean Promise 반환. 삭제 시 true, 취소 시 false"
+        }
+      },
+      "commonProps": {
+        "open": {
+          "type": "boolean",
+          "required": true,
+          "description": "다이얼로그 표시 여부"
+        },
+        "title": {
+          "type": "ReactNode",
+          "required": true,
+          "description": "다이얼로그 제목"
+        },
+        "description": {
+          "type": "ReactNode",
+          "description": "설명 텍스트"
+        },
+        "content": {
+          "type": "ReactNode",
+          "description": "커스텀 본문 콘텐츠"
+        },
+        "onClose": {
+          "type": "function",
+          "required": true,
+          "description": "닫힐 때 호출"
+        },
+        "closeOnDimmerClick": {
+          "type": "boolean",
+          "description": "배경 클릭으로 닫기 허용"
+        }
+      },
+      "features": [
+        "Accessibility 기본 속성 상속",
+        "useOverlay() 훅으로 다이얼로그 라이프사이클 프로그래매틱 관리",
+        "content prop으로 기본 레이아웃 확장 가능",
+        "closeOnDimmerClick={true}로 버튼 없이 닫기 가능"
+      ]
+    },
+    "TextField": {
+      "description": "사용자가 텍스트를 입력할 수 있는 요소. 다양한 입력 시나리오를 위한 여러 스타일 옵션 제공.",
+      "variants": ["box", "line", "big", "hero"],
+      "features": [
+        "레이블 지원 (appear 또는 sustain 표시 옵션)",
+        "도움말 텍스트로 에러 처리",
+        "금액 및 전화번호 포맷팅",
+        "접두사/접미사 텍스트 지원",
+        "특수 변형: Clearable 및 Button",
+        "키보드 설정 및 검증 옵션"
+      ],
+      "mainProps": {
+        "variant": {
+          "type": "'box' | 'line' | 'big' | 'hero'",
+          "required": true,
+          "description": "필드 외관 결정"
+        },
+        "value": {
+          "type": "string | number",
+          "description": "현재 입력 값"
+        },
+        "onChangeText": {
+          "type": "Function",
+          "description": "텍스트 변경 시 콜백"
+        },
+        "label": {
+          "type": "string",
+          "description": "필드 레이블 텍스트"
+        },
+        "labelOption": {
+          "type": "'appear' | 'sustain'",
+          "default": "'appear'",
+          "description": "항상 또는 채워졌을 때만 레이블 표시"
+        },
+        "hasError": {
+          "type": "boolean",
+          "default": "false",
+          "description": "에러 상태 표시"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "필드 비활성화"
+        },
+        "prefix": {
+          "type": "string",
+          "description": "입력 앞의 고정 텍스트"
+        },
+        "suffix": {
+          "type": "string",
+          "description": "입력 뒤의 고정 텍스트"
+        },
+        "help": {
+          "type": "ReactNode",
+          "description": "도움말 또는 에러 메시지"
+        },
+        "format": {
+          "type": "Object",
+          "description": "입력 변환 (금액, 전화번호)"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "플레이스홀더 텍스트"
+        }
+      },
+      "examples": {
+        "basic": "<TextField\n  variant=\"line\"\n  placeholder=\"Enter text\"\n  value={value}\n  onChangeText={setValue}\n/>",
+        "withError": "<TextField\n  variant=\"line\"\n  label=\"Email\"\n  hasError={true}\n  help=\"Invalid email format\"\n/>",
+        "currency": "<TextField\n  variant=\"line\"\n  prefix=\"₩\"\n  format={TextField.format.amount}\n/>",
+        "clearable": "<TextField.Clearable\n  variant=\"line\"\n  onClear={() => setSearchText('')}\n/>",
+        "button": "<TextField.Button\n  variant=\"line\"\n  onPress={() => openDatePicker()}\n/>"
+      }
+    },
+    "Navbar": {
+      "description": "화면 상단의 네비게이션 바 컴포넌트. React Navigation과 원활하게 통합됩니다.",
+      "features": [
+        "유연한 레이아웃: 왼쪽, 중앙(제목), 오른쪽 콘텐츠 영역",
+        "React Navigation 호환: 커스텀 헤더 컴포넌트로 사용 가능",
+        "사전 제작 버튼: BackButton, CloseButton, TextButton",
+        "완전한 커스터마이징: 모든 React 노드 수용"
+      ],
+      "props": {
+        "left": {
+          "type": "React.ReactNode",
+          "description": "Navbar 왼쪽에 표시될 내용 (일반적으로 뒤로가기/닫기 버튼)"
+        },
+        "title": {
+          "type": "React.ReactNode",
+          "description": "Navbar 중앙에 표시될 제목"
+        },
+        "right": {
+          "type": "React.ReactNode",
+          "description": "Navbar 오른쪽에 표시될 내용 (액션 버튼)"
+        }
+      },
+      "subComponents": [
+        "Navbar.BackButton - 표준 뒤로가기 네비게이션",
+        "Navbar.CloseButton - 모달 닫기 액션",
+        "Navbar.TextButton - 텍스트 기반 액션 버튼",
+        "Navbar.Title - 스타일이 적용된 제목 컴포넌트"
+      ],
+      "examples": {
+        "basic": "<Navbar \n  left={<Navbar.BackButton onPress={() => navigation.goBack()} />} \n  title=\"Page Title\" \n/>",
+        "withAction": "<Navbar\n  left={<Navbar.BackButton onPress={() => navigation.goBack()} />}\n  title=\"Settings\"\n  right={<Navbar.TextButton onPress={handleSave}>Save</Navbar.TextButton>}\n/>",
+        "modal": "<Navbar\n  left={<Navbar.CloseButton onPress={() => navigation.goBack()} />}\n  title=\"Modal Title\"\n/>"
+      }
+    },
+    "List": {
+      "description": "여러 항목을 세로로 표시하고 항목 사이에 자동으로 구분선을 추가하는 컴포넌트.",
+      "props": {
+        "children": {
+          "type": "React.ReactNode",
+          "required": true,
+          "description": "리스트의 아이템들 지정"
+        },
+        "rowSeparator": {
+          "type": "'full' | 'indented' | 'none'",
+          "default": "'indented'",
+          "description": "리스트 row 사이의 구분선 타입"
+        },
+        "style": {
+          "type": "StyleProp<ViewStyle>",
+          "description": "리스트 스타일 지정"
+        }
+      },
+      "separatorTypes": {
+        "indented": "왼쪽 여백이 있는 구분선 (기본값)",
+        "full": "전체 너비 구분선",
+        "none": "구분선 없음"
+      },
+      "relatedComponents": [
+        "ListRow - 개별 리스트 항목 컨테이너",
+        "ListHeader - 리스트 그룹화를 위한 섹션 헤더",
+        "ListFooter - 섹션 푸터 또는 설명 텍스트"
+      ],
+      "usagePatterns": [
+        "기본 구현: ListRow 컴포넌트를 children으로 래핑",
+        "설정 화면: ListRow의 withArrow prop과 onPress 핸들러로 네비게이션 가능 메뉴 항목",
+        "아이콘 통합: 왼쪽에 ListRow.Icon, 오른쪽에 Switch 같은 컴포넌트",
+        "정보 표시: 레이블이 있는 행과 ListRow.Texts로 여러 타이포그래피 레벨 및 컬러 변형"
+      ]
+    },
+    "Checkbox": {
+      "description": "사용자가 하나 이상의 항목을 선택할 수 있게 하는 컴포넌트. 체크 및 비체크 상태를 표시하며 여러 항목을 동시에 선택할 수 있습니다.",
+      "shapes": {
+        "Circle": "원형 테두리로 둘러싸인 체크 아이콘",
+        "Line": "테두리 없는 독립형 체크 아이콘"
+      },
+      "stateManagement": {
+        "controlled": "외부 상태 관리를 위해 checked와 onCheckedChange를 함께 사용",
+        "uncontrolled": "변경 추적 없이 내부 상태 관리를 위해 defaultChecked 사용"
+      },
+      "props": {
+        "checked": {
+          "type": "boolean",
+          "description": "외부 상태 표시자"
+        },
+        "defaultChecked": {
+          "type": "boolean",
+          "description": "초기 내부 상태"
+        },
+        "onCheckedChange": {
+          "type": "function",
+          "description": "상태 변경 콜백"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "상호작용 비활성화"
+        },
+        "size": {
+          "type": "number",
+          "default": "24",
+          "description": "컴포넌트 크기"
+        },
+        "style": {
+          "type": "StyleProp",
+          "description": "커스텀 스타일링"
+        }
+      },
+      "examples": {
+        "controlled": "<Checkbox.Circle checked={checked} onCheckedChange={setChecked} />",
+        "uncontrolled": "<Checkbox.Circle defaultChecked={true} />",
+        "customSize": "<Checkbox.Circle defaultChecked={true} size={36} />",
+        "disabled": "<Checkbox.Circle disabled={true} />"
+      },
+      "features": [
+        "React Native의 Pressable 컴포넌트 확장",
+        "비활성화 시 클릭 시도 시 흔들림 애니메이션",
+        "크기 커스터마이징 가능"
+      ]
+    },
+    "Switch": {
+      "description": "두 가지 상태(on/off, enabled/disabled) 사이를 토글하는 React Native UI 요소. 체크박스와 유사하지만 시각적으로 더 직관적입니다.",
+      "props": {
+        "checked": {
+          "type": "boolean",
+          "description": "on/off 상태 표시"
+        },
+        "onCheckedChange": {
+          "type": "(value: boolean) => void",
+          "description": "상태 변경 시 호출"
+        },
+        "defaultChecked": {
+          "type": "boolean",
+          "default": "false",
+          "description": "내부 관리를 위한 초기 상태"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": "false",
+          "description": "상호작용 비활성화"
+        },
+        "onPress": {
+          "type": "(event: GestureResponderEvent) => void",
+          "description": "클릭 핸들러"
+        },
+        "style": {
+          "type": "StyleProp<ViewStyle>",
+          "description": "커스텀 스타일링"
+        }
+      },
+      "visualDesign": {
+        "dimensions": "50px width × 30px height",
+        "borderRadius": "15px",
+        "toggleCircle": "white, 7px left positioning",
+        "disabledAppearance": "30% opacity, cursor disabled"
+      },
+      "examples": {
+        "controlled": "const [checked, setChecked] = useState(true);\n<Switch checked={checked} onCheckedChange={setChecked} />",
+        "disabled": "<Switch checked disabled />\n<Switch checked={false} disabled />"
+      },
+      "features": [
+        "제어된 상태 관리 (checked + onCheckedChange)",
+        "비활성화 상태 (30% 불투명도)",
+        "내부 상태 옵션 (defaultChecked)",
+        "커스터마이징 가능한 스타일"
+      ]
+    },
+    "Tab": {
+      "description": "단일 화면 내에서 여러 섹션의 효율적인 콘텐츠 전환을 가능하게 하는 컴포넌트. 관련 정보를 구성하는 데 이상적입니다.",
+      "props": {
+        "TabProps": {
+          "fluid": {
+            "type": "boolean",
+            "default": "false",
+            "description": "항목이 컨테이너 너비를 초과할 때 가로 스크롤 활성화"
+          },
+          "size": {
+            "type": "'large' | 'small'",
+            "default": "'large'",
+            "description": "Tab 높이 및 텍스트 크기 제어"
+          },
+          "defaultValue": {
+            "type": "string",
+            "description": "초기 선택 탭 (내부 상태 관리)"
+          },
+          "value": {
+            "type": "string",
+            "description": "선택된 탭 값 (외부 상태 관리)"
+          },
+          "onChange": {
+            "type": "(value: string) => void",
+            "description": "선택된 탭 변경 시 콜백"
+          },
+          "children": {
+            "type": "ReactNode",
+            "description": "Tab.Item 컴포넌트들"
+          }
+        },
+        "TabItemProps": {
+          "value": {
+            "type": "string",
+            "required": true,
+            "description": "고유 탭 식별자"
+          },
+          "children": {
+            "type": "ReactNode",
+            "required": true,
+            "description": "탭 표시 콘텐츠"
+          },
+          "redBean": {
+            "type": "boolean",
+            "default": "false",
+            "description": "알림용 빨간 점 표시"
+          },
+          "style": {
+            "type": "StyleProp",
+            "description": "커스텀 스타일링"
+          },
+          "onPress": {
+            "type": "GestureResponderEvent",
+            "description": "클릭 핸들러"
+          }
+        }
+      },
+      "examples": {
+        "internal": "<Tab defaultValue=\"0\">\n  <Tab.Item value={'0'}>Tab1</Tab.Item>\n  <Tab.Item value={'1'}>Tab2</Tab.Item>\n</Tab>",
+        "external": "function Controlled() {\n  const [value, setValue] = useState('0');\n  return (\n    <Tab value={value} onChange={setValue}>\n      <Tab.Item value={'0'}>Tab1</Tab.Item>\n      <Tab.Item value={'1'}>Tab2</Tab.Item>\n    </Tab>\n  );\n}",
+        "scrollable": "<Tab fluid defaultValue=\"tab1\">\n  {/* Multiple Tab.Item components */}\n</Tab>"
+      },
+      "features": [
+        "계층적 탭 구성 (Tab.Item)",
+        "비제어(내부 상태) 또는 제어(외부 상태) 모드",
+        "가로 스크롤 지원 (fluid prop)",
+        "알림 표시자 (redBean)",
+        "크기 조절 가능 (large/small)"
+      ]
+    },
+    "Badge": {
+      "description": "빠른 인식을 위해 항목 상태를 강조하는 컴팩트하고 시각적으로 독특한 요소.",
+      "variants": {
+        "fill": "높은 채도 스타일. 강한 시각적 임팩트로 주요 항목 강조에 이상적",
+        "weak": "낮은 채도 스타일. 덜 눈에 띄는 시각적 존재감"
+      },
+      "sizes": ["tiny", "small (default)", "medium", "large"],
+      "colors": ["blue (default)", "teal", "green", "red", "yellow", "elephant"],
+      "props": {
+        "children": {
+          "type": "string",
+          "required": true,
+          "description": "Badge 내부에 표시되는 텍스트"
+        },
+        "size": {
+          "type": "'tiny'|'small'|'medium'|'large'",
+          "default": "'small'",
+          "description": "컴포넌트 크기 설정"
+        },
+        "badgeStyle": {
+          "type": "'fill'|'weak'",
+          "default": "'fill'",
+          "description": "시각적 스타일 (채도 레벨)"
+        },
+        "type": {
+          "type": "string",
+          "default": "'blue'",
+          "description": "컬러 선택"
+        },
+        "typography": {
+          "type": "string",
+          "default": "'t5'",
+          "description": "텍스트 스타일링"
+        },
+        "fontWeight": {
+          "type": "string",
+          "default": "'semiBold'",
+          "description": "텍스트 두께"
+        },
+        "marginLeft": {
+          "type": "number",
+          "default": "0",
+          "description": "왼쪽 여백"
+        },
+        "marginRight": {
+          "type": "number",
+          "default": "0",
+          "description": "오른쪽 여백"
+        },
+        "style": {
+          "type": "StyleProp<ViewStyle>",
+          "description": "커스텀 스타일링"
+        }
+      },
+      "example": "<Badge size=\"medium\" badgeStyle=\"fill\" type=\"blue\">\n  Badge\n</Badge>"
+    }
+  },
+
+  "bestPractices": {
+    "colorUsage": [
+      "토큰 기반 접근 방식 사용 (하드코딩된 값 대신)",
+      "시맨틱 컬러로 일관성 유지",
+      "접근성을 위해 충분한 대비 보장",
+      "불투명도 변형을 활용한 계층 표현"
+    ],
+    "typography": [
+      "큰 텍스트 모드를 위해 절대값 하드코딩 금지",
+      "시각적 계층 유지를 위한 타이포그래피 스케일 사용",
+      "플랫폼 간 일관성 보장",
+      "접근성 기준 준수"
+    ],
+    "componentUsage": [
+      "적절한 컴포넌트 변형 선택 (fill vs weak)",
+      "일관된 상태 관리 패턴 사용 (제어 vs 비제어)",
+      "접근성 props 활용",
+      "성능을 위해 불필요한 리렌더링 최소화"
+    ],
+    "layout": [
+      "Navbar와 List 같은 구조 컴포넌트 활용",
+      "적절한 간격 및 정렬 유지",
+      "다양한 화면 크기에 대응하는 반응형 디자인",
+      "터치 타겟 크기 준수 (최소 44×44px)"
+    ]
+  },
+
+  "commonPatterns": {
+    "formInputs": {
+      "description": "TextField, Checkbox, Switch를 사용한 폼 구축",
+      "example": "const [form, setForm] = useState({\n  name: '',\n  email: '',\n  subscribe: false,\n  notifications: true\n});\n\n<TextField\n  variant=\"line\"\n  label=\"이름\"\n  value={form.name}\n  onChangeText={(text) => setForm({...form, name: text})}\n/>\n<Checkbox.Circle\n  checked={form.subscribe}\n  onCheckedChange={(checked) => setForm({...form, subscribe: checked})}\n/>\n<Switch\n  checked={form.notifications}\n  onCheckedChange={(checked) => setForm({...form, notifications: checked})}\n/>"
+    },
+    "listNavigation": {
+      "description": "List와 ListRow로 네비게이션 가능한 메뉴 생성",
+      "example": "<List>\n  <ListRow\n    onPress={() => navigation.navigate('Settings')}\n    withArrow\n  >\n    <ListRow.Icon name=\"settings\" />\n    <ListRow.Texts title=\"설정\" />\n  </ListRow>\n  <ListRow\n    onPress={() => navigation.navigate('Profile')}\n    withArrow\n  >\n    <ListRow.Icon name=\"profile\" />\n    <ListRow.Texts title=\"프로필\" />\n  </ListRow>\n</List>"
+    },
+    "feedback": {
+      "description": "Toast, Dialog, Badge로 사용자 피드백 제공",
+      "example": "// Success Toast\n<Toast\n  open={success}\n  text=\"저장 완료\"\n  icon={<Toast.Icon name=\"check\" />}\n  onClose={() => setSuccess(false)}\n/>\n\n// Confirm Dialog\nawait ConfirmDialog({\n  title: '삭제하시겠습니까?',\n  description: '이 작업은 되돌릴 수 없습니다',\n  leftButton: '취소',\n  rightButton: '삭제'\n});\n\n// Status Badge\n<Badge type=\"green\" size=\"small\">\n  완료\n</Badge>"
+    },
+    "tabNavigation": {
+      "description": "Tab 컴포넌트로 콘텐츠 섹션 구성",
+      "example": "const [activeTab, setActiveTab] = useState('home');\n\n<Tab value={activeTab} onChange={setActiveTab}>\n  <Tab.Item value=\"home\">홈</Tab.Item>\n  <Tab.Item value=\"search\">검색</Tab.Item>\n  <Tab.Item value=\"profile\" redBean>프로필</Tab.Item>\n</Tab>\n\n{activeTab === 'home' && <HomeContent />}\n{activeTab === 'search' && <SearchContent />}\n{activeTab === 'profile' && <ProfileContent />}"
+    }
+  },
+
+  "quickReference": {
+    "installation": "npm install @toss/tds-react-native",
+    "basicImport": "import { Button, TextField, Toast, colors } from '@toss/tds-react-native';",
+    "colorUsage": "colors.blue500, colors.grey100, colors.red600",
+    "typographyUsage": "Typography 1-7, sub-Typography 1-13",
+    "commonComponents": [
+      "Button - 액션 트리거",
+      "TextField - 텍스트 입력",
+      "Toast - 일시적 메시지",
+      "Dialog - 확인 요청",
+      "Navbar - 상단 네비게이션",
+      "List - 항목 목록",
+      "Tab - 탭 네비게이션",
+      "Badge - 상태 표시",
+      "Checkbox - 다중 선택",
+      "Switch - 토글"
+    ]
+  }
+}

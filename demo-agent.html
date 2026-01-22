@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>앱인토스 AI 에이전트 - 데모</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(-25%); }
+      50% { transform: translateY(0); }
+    }
+    .animate-spin { animation: spin 1s linear infinite; }
+    .animate-bounce { animation: bounce 1s infinite; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useCallback, useEffect } = React;
+
+    // 간단한 아이콘 컴포넌트들
+    const Icon = ({ children, className = "w-5 h-5" }) => (
+      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        {children}
+      </svg>
+    );
+
+    const Sparkles = ({ className }) => <Icon className={className}><path d="M12 3v4m0 10v4M7.05 7.05l2.83 2.83m4.24 4.24l2.83 2.83M3 12h4m10 0h4M7.05 16.95l2.83-2.83m4.24-4.24l2.83-2.83"/></Icon>;
+    const MessageSquare = ({ className }) => <Icon className={className}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></Icon>;
+    const Tag = ({ className }) => <Icon className={className}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z M7 7h.01"/></Icon>;
+    const Shuffle = ({ className }) => <Icon className={className}><path d="M16 3h5v5 M4 20L21 3 M21 16v5h-5 M15 15l6 6 M4 4l5 5"/></Icon>;
+    const Send = ({ className }) => <Icon className={className}><path d="M22 2L11 13 M22 2l-7 20-4-9-9-4 20-7z"/></Icon>;
+    const Code = ({ className }) => <Icon className={className}><path d="M16 18l6-6-6-6 M8 6l-6 6 6 6"/></Icon>;
+    const BarChart3 = ({ className }) => <Icon className={className}><path d="M3 3v18h18 M18 17V9 M13 17V5 M8 17v-3"/></Icon>;
+    const Rocket = ({ className }) => <Icon className={className}><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0 M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></Icon>;
+    const RefreshCw = ({ className }) => <Icon className={className}><path d="M21 2v6h-6 M3 12a9 9 0 0 1 15-6.7L21 8 M3 22v-6h6 M21 12a9 9 0 0 1-15 6.7L3 16"/></Icon>;
+    const DollarSign = ({ className }) => <Icon className={className}><path d="M12 2v20 M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></Icon>;
+    const Heart = ({ className }) => <Icon className={className}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></Icon>;
+    const Zap = ({ className }) => <Icon className={className}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></Icon>;
+    const Users = ({ className }) => <Icon className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></Icon>;
+    const Brain = ({ className }) => <Icon className={className}><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2z M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2z"/></Icon>;
+    const TrendingUp = ({ className }) => <Icon className={className}><path d="M22 7L13.5 15.5 8.5 10.5 2 17 M16 7h6v6"/></Icon>;
+
+    function AppsInTossAgentDemo() {
+      const [activeMode, setActiveMode] = useState('chat');
+      const [activeTab, setActiveTab] = useState('ideas');
+      const [messages, setMessages] = useState([
+        {
+          role: 'assistant',
+          content: '안녕하세요! 앱인토스용 앱 아이디어를 함께 만들어드리겠습니다.\n\n저는 10가지 AI 스킬을 활용해 도움을 드릴 수 있어요:\n• 아이디어 생성 & 기획서 작성\n• 시장 분석 & 수익화 전략\n• 기술 스택 추천 & 코드 생성\n• UI/UX 디자인 & 출시 계획\n\n어떤 앱을 만들고 싶으신가요?',
+        },
+      ]);
+      const [input, setInput] = useState('');
+      const [selectedCategory, setSelectedCategory] = useState('');
+      const [generatedIdeas, setGeneratedIdeas] = useState([]);
+      const [isGenerating, setIsGenerating] = useState(false);
+
+      const categories = [
+        { id: 'finance', name: '금융/재테크', icon: DollarSign, color: 'bg-green-500' },
+        { id: 'lifestyle', name: '라이프스타일', icon: Heart, color: 'bg-pink-500' },
+        { id: 'productivity', name: '생산성', icon: Zap, color: 'bg-yellow-500' },
+        { id: 'social', name: '소셜/커뮤니티', icon: Users, color: 'bg-blue-500' },
+        { id: 'learning', name: '교육/학습', icon: Brain, color: 'bg-purple-500' },
+        { id: 'commerce', name: '커머스/쇼핑', icon: TrendingUp, color: 'bg-orange-500' },
+      ];
+
+      const skillMenuItems = [
+        { id: 'ideas', label: '아이디어', icon: Sparkles },
+        { id: 'analysis', label: '분석', icon: BarChart3 },
+        { id: 'dev', label: '개발', icon: Code },
+        { id: 'launch', label: '출시', icon: Rocket },
+      ];
+
+      // 데모 아이디어 데이터
+      const demoIdeas = {
+        finance: [
+          {
+            title: '통장 잔액 알림 커스터마이징',
+            description: '원하는 금액이 될 때마다 알림을 받고, 목표 저축액 달성 현황을 시각화',
+            features: ['맞춤 알림 설정', '저축 진행도', '월별 리포트', '자동 분석'],
+            target: '20-30대 직장인',
+            revenue: '프리미엄 기능 구독',
+            score: 0.85,
+          },
+          {
+            title: '매일 100원 챌린지',
+            description: '매일 100원씩 저축하며 친구들과 경쟁하는 재미있는 저축 챌린지',
+            features: ['일일 챌린지', '친구 경쟁', '뱃지 시스템', '보상 제공'],
+            target: '2030 청년층',
+            revenue: '광고 & 제휴',
+            score: 0.92,
+          },
+        ],
+        productivity: [
+          {
+            title: '5분 집중 타이머',
+            description: '짧고 강력한 5분 집중 세션으로 업무 생산성 극대화',
+            features: ['포모도로 기법', '집중 통계', '휴식 알림', '일일 목표'],
+            target: '직장인, 학생',
+            revenue: '프리미엄 테마',
+            score: 0.88,
+          },
+        ],
+        lifestyle: [
+          {
+            title: '물 마시기 리마인더',
+            description: '하루 물 섭취량을 추적하고 건강한 습관 만들기',
+            features: ['맞춤 알림', '섭취 기록', '건강 팁', '통계 차트'],
+            target: '건강 관심자',
+            revenue: '앱내 구매',
+            score: 0.78,
+          },
+        ],
+      };
+
+      const handleSendMessage = async () => {
+        if (!input.trim()) return;
+
+        const userMessage = { role: 'user', content: input };
+        setMessages((prev) => [...prev, userMessage]);
+        setInput('');
+
+        setIsGenerating(true);
+
+        // 데모: 간단한 응답 생성
+        setTimeout(() => {
+          let response = '';
+          const lower = input.toLowerCase();
+
+          if (lower.includes('금융') || lower.includes('돈')) {
+            response = `금융/재테크 분야에 관심이 있으시군요! 💰\n\n'금융' 카테고리를 선택하시면 AI가 맞춤형 아이디어를 생성해드립니다.`;
+          } else if (lower.includes('생산성')) {
+            response = `생산성 향상 앱에 관심이 있으시군요! ⚡\n\n짧은 시간에 빠르게 목표를 달성할 수 있는 앱이 잘 맞습니다.`;
+          } else {
+            response = `좋은 질문입니다! 😊\n\n구체적인 관심 분야를 말씀해주시면 맞춤형 아이디어를 제안해드릴게요!`;
+          }
+
+          setMessages((prev) => [...prev, { role: 'assistant', content: response }]);
+          setIsGenerating(false);
+        }, 1000);
+      };
+
+      const handleCategorySelect = (categoryId) => {
+        setSelectedCategory(categoryId);
+        setIsGenerating(true);
+
+        setTimeout(() => {
+          setGeneratedIdeas(demoIdeas[categoryId] || demoIdeas.finance);
+          setIsGenerating(false);
+        }, 800);
+      };
+
+      const handleRandomGenerate = () => {
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)].id;
+        handleCategorySelect(randomCategory);
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+          {/* Header */}
+          <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+            <div className="max-w-6xl mx-auto px-4 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                    <Sparkles className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-900">앱인토스 AI 에이전트</h1>
+                    <p className="text-sm text-gray-500">10가지 AI 스킬로 앱 개발 지원 (데모)</p>
+                  </div>
+                </div>
+                {isGenerating && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full">
+                    <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />
+                    <span className="text-sm text-blue-600">처리 중...</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {/* Skill Menu Tabs */}
+          <div className="bg-white border-b border-gray-100">
+            <div className="max-w-6xl mx-auto px-4">
+              <div className="flex gap-1">
+                {skillMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all border-b-2 ${
+                        activeTab === item.id
+                          ? 'border-blue-500 text-blue-600 bg-blue-50/50'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            {/* Ideas Tab */}
+            {activeTab === 'ideas' && (
+              <div className="space-y-6">
+                {/* Mode Selector */}
+                <div className="flex gap-2 bg-white rounded-xl p-2 shadow-sm">
+                  <button
+                    onClick={() => setActiveMode('chat')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                      activeMode === 'chat' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    대화형 추천
+                  </button>
+                  <button
+                    onClick={() => setActiveMode('category')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                      activeMode === 'category' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Tag className="w-5 h-5" />
+                    카테고리별
+                  </button>
+                  <button
+                    onClick={() => setActiveMode('random')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                      activeMode === 'random' ? 'bg-blue-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Shuffle className="w-5 h-5" />
+                    랜덤 생성
+                  </button>
+                </div>
+
+                {/* Chat Mode */}
+                {activeMode === 'chat' && (
+                  <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div className="h-[400px] overflow-y-auto p-6 space-y-4">
+                      {messages.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div
+                            className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                              msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                      {isGenerating && (
+                        <div className="flex justify-start">
+                          <div className="bg-gray-100 rounded-2xl px-4 py-3">
+                            <div className="flex gap-1">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="border-t border-gray-200 p-4 bg-gray-50">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                          placeholder="어떤 앱을 만들고 싶으세요?"
+                          className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                          onClick={handleSendMessage}
+                          disabled={!input.trim() || isGenerating}
+                          className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                          <Send className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Category Mode */}
+                {activeMode === 'category' && (
+                  <div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                      {categories.map((cat) => {
+                        const Icon = cat.icon;
+                        return (
+                          <button
+                            key={cat.id}
+                            onClick={() => handleCategorySelect(cat.id)}
+                            disabled={isGenerating}
+                            className={`p-6 rounded-2xl border-2 transition-all hover:shadow-lg disabled:opacity-50 ${
+                              selectedCategory === cat.id
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 bg-white hover:border-blue-300'
+                            }`}
+                          >
+                            <div className={`w-12 h-12 ${cat.color} rounded-xl flex items-center justify-center mb-3`}>
+                              <Icon className="w-6 h-6 text-white" />
+                            </div>
+                            <h3 className="font-semibold text-gray-900">{cat.name}</h3>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Generated Ideas */}
+                    {generatedIdeas.length > 0 && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-900">생성된 아이디어</h3>
+                        {generatedIdeas.map((idea, idx) => (
+                          <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">{idea.title}</h3>
+                                <p className="text-gray-600">{idea.description}</p>
+                              </div>
+                              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <Sparkles className="w-6 h-6 text-blue-500" />
+                              </div>
+                            </div>
+
+                            <div className="space-y-4">
+                              <div className="flex flex-wrap gap-2">
+                                {idea.features.map((feature, fidx) => (
+                                  <span key={fidx} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                                    {feature}
+                                  </span>
+                                ))}
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="text-gray-500">타겟:</span>
+                                  <span className="ml-1 text-gray-700">{idea.target}</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-500">수익화:</span>
+                                  <span className="ml-1 text-gray-700">{idea.revenue}</span>
+                                </div>
+                              </div>
+
+                              {idea.score && (
+                                <div className="flex items-center gap-2">
+                                  <div className="text-sm text-gray-500">적합도:</div>
+                                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                                      style={{ width: `${idea.score * 100}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-sm font-medium text-blue-600">{Math.round(idea.score * 100)}%</span>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="mt-4 pt-4 border-t border-gray-200 flex gap-2">
+                              <button className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all font-medium flex items-center justify-center gap-2">
+                                <Code className="w-4 h-4" />
+                                상세 기획서
+                              </button>
+                              <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all flex items-center gap-2">
+                                <BarChart3 className="w-4 h-4" />
+                                분석
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Random Mode */}
+                {activeMode === 'random' && (
+                  <div>
+                    <div className="text-center mb-8">
+                      <button
+                        onClick={handleRandomGenerate}
+                        disabled={isGenerating}
+                        className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
+                      >
+                        {isGenerating ? (
+                          <RefreshCw className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Shuffle className="w-5 h-5" />
+                        )}
+                        {isGenerating ? '생성 중...' : '랜덤 아이디어 생성'}
+                      </button>
+                      <p className="mt-3 text-gray-600">클릭할 때마다 새로운 아이디어를 추천해드립니다</p>
+                    </div>
+
+                    {generatedIdeas.length > 0 && (
+                      <div className="space-y-4">
+                        {generatedIdeas.slice(0, 2).map((idea, idx) => (
+                          <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">{idea.title}</h3>
+                            <p className="text-gray-600 mb-4">{idea.description}</p>
+                            <div className="flex gap-2">
+                              <button className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                상세보기
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Other Tabs */}
+            {activeTab === 'analysis' && (
+              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                <BarChart3 className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">분석 기능</h2>
+                <p className="text-gray-600">아이디어 탭에서 아이디어를 선택하면 시장 분석과 수익화 전략을 확인할 수 있습니다.</p>
+              </div>
+            )}
+
+            {activeTab === 'dev' && (
+              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                <Code className="w-16 h-16 text-purple-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">개발 도구</h2>
+                <p className="text-gray-600">기술 스택 추천, UI/UX 가이드, 코드 생성 기능을 제공합니다.</p>
+              </div>
+            )}
+
+            {activeTab === 'launch' && (
+              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                <Rocket className="w-16 h-16 text-orange-500 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">출시 계획</h2>
+                <p className="text-gray-600">마케팅 전략, 출시 일정, 목표 지표 설정을 도와드립니다.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Tips Section */}
+          <div className="max-w-6xl mx-auto px-4 pb-8">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl p-6 text-white">
+              <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                <Sparkles className="w-6 h-6" />
+                앱인토스 성공 팁
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <div className="font-semibold mb-1">🎯 단순하게</div>
+                  <div className="opacity-90">한 가지 기능에 집중하여 명확한 가치 제공</div>
+                </div>
+                <div>
+                  <div className="font-semibold mb-1">⚡ 빠르게</div>
+                  <div className="opacity-90">5초 안에 핵심 기능 사용 가능하도록</div>
+                </div>
+                <div>
+                  <div className="font-semibold mb-1">🔄 습관화</div>
+                  <div className="opacity-90">매일 돌아오고 싶게 만드는 리텐션 설계</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<AppsInTossAgentDemo />);
+  </script>
+</body>
+</html>
