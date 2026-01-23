@@ -24,8 +24,7 @@ export default defineConfig({
         primaryColor: '#3182F6',
 
         // 앱 아이콘 URL (반드시 HTTPS)
-        // TODO: 실제 아이콘 URL로 변경 필요
-        icon: 'https://static.toss.im/appsintoss/73/10550764-5ac1-44e2-9ff3-ad78d8d2e71a.png',
+        icon: 'https://raw.githubusercontent.com/jino123413/ci-calculator/main/public/icon.png',
 
         // 브리지 색상 모드
         bridgeColorMode: 'basic',
