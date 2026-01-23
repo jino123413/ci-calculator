@@ -29,16 +29,16 @@ jobs:
     - name: Check build output
       run: |
         echo "Checking build output..."
-        ls -la
-        if [ -d ".ait" ]; then
-          echo "Found .ait directory:"
-          ls -la .ait/
+        ls -lah
+        echo ""
+        echo "Searching for .ait files:"
+        find . -name "*.ait" -type f
+        echo ""
+        if [ -f "ci-calculator.ait" ]; then
+          echo "Found ci-calculator.ait:"
+          ls -lh ci-calculator.ait
         else
-          echo ".ait directory not found"
-        fi
-        if [ -d "dist" ]; then
-          echo "Found dist directory:"
-          ls -la dist/
+          echo "ci-calculator.ait not found in root"
         fi
 
     - name: Upload build artifacts
@@ -46,7 +46,8 @@ jobs:
       with:
         name: build
         path: |
-          .ait/
+          *.ait
+          ci-calculator.ait
           dist/
           build.log
       if: always()
