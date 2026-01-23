@@ -28,17 +28,25 @@ jobs:
 
     - name: Check build output
       run: |
-        echo "Checking build output..."
-        ls -lah
+        echo "=== Current directory ==="
+        pwd
         echo ""
-        echo "Searching for .ait files:"
+        echo "=== All files (tree view) ==="
+        find . -type f | head -50
+        echo ""
+        echo "=== Searching for .ait files ==="
         find . -name "*.ait" -type f
         echo ""
+        echo "=== Root directory ==="
+        ls -lah
+        echo ""
+        echo "=== Looking for ci-calculator.ait ==="
         if [ -f "ci-calculator.ait" ]; then
-          echo "Found ci-calculator.ait:"
+          echo "✅ Found ci-calculator.ait"
           ls -lh ci-calculator.ait
+          file ci-calculator.ait
         else
-          echo "ci-calculator.ait not found in root"
+          echo "❌ ci-calculator.ait not found in root"
         fi
 
     - name: Upload build artifacts
