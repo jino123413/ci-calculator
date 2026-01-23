@@ -64,7 +64,12 @@
       "Bash(npm uninstall:*)",
       "Bash(if [ -f .gitignore ])",
       "Bash(then echo \"exists\")",
-      "Bash(else echo \"node_modules/\n.expo/\ndist/\nnpm-debug.*\n*.jks\n*.p8\n*.p12\n*.key\n*.mobileprovision\n*.orig.*\nweb-build/\n.DS_Store\n*.pem\n*.log\n.env\n.env.*\")"
-    ]
+      "Bash(else echo \"node_modules/\n.expo/\ndist/\nnpm-debug.*\n*.jks\n*.p8\n*.p12\n*.key\n*.mobileprovision\n*.orig.*\nweb-build/\n.DS_Store\n*.pem\n*.log\n.env\n.env.*\")",
+      "Bash(gh:*)",
+      "Bash(npm run build:*)",
+      "Bash(cmd.exe /c \"rmdir /s /q C:\\\\Users\\\\USER-PC\\\\Desktop\\\\ci-calculator\")",
+      "Bash(cmd.exe /c \"robocopy \"\"C:\\\\Users\\\\USER-PC\\\\Desktop\\\\앱인토스 프로젝트\\\\receipt-static\"\" \"\"C:\\\\Users\\\\USER-PC\\\\Desktop\\\\ci-calculator-new\"\" /E /XD node_modules .git /XF nul && echo Done\")"
+    ],
+    "defaultMode": "bypassPermissions"
   }
 }
