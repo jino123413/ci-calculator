@@ -23,6 +23,21 @@ jobs:
     - name: Build
       run: npm run build
 
+    - name: Check build output
+      run: |
+        echo "Checking build output..."
+        ls -la
+        if [ -d ".ait" ]; then
+          echo "Found .ait directory:"
+          ls -la .ait/
+        else
+          echo ".ait directory not found"
+        fi
+        if [ -d "dist" ]; then
+          echo "Found dist directory:"
+          ls -la dist/
+        fi
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
