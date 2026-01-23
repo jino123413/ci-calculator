@@ -21,7 +21,10 @@ jobs:
       run: npm install --legacy-peer-deps
 
     - name: Build
-      run: npm run build
+      run: |
+        echo "Starting build..."
+        npm run build 2>&1 | tee build.log
+        echo "Build exit code: $?"
 
     - name: Check build output
       run: |
@@ -42,4 +45,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: build
-        path: .ait/
+        path: |
+          .ait/
+          dist/
+          build.log
+      if: always()
