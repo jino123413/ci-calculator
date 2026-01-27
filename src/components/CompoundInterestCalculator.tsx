@@ -5,7 +5,7 @@ import { GoogleAdMob } from '@apps-in-toss/framework';
 import TimeSeriesChart from './TimeSeriesChart';
 import LossRecoveryCalculator from './LossRecoveryCalculator';
 
-const INTERSTITIAL_AD_ID = 'ait-ad-test-interstitial-id';
+const INTERSTITIAL_AD_ID = 'ait.v2.live.6a9582ec4e524364';
 
 export default function CompoundInterestCalculator() {
   const [activeTab, setActiveTab] = useState<'calculator' | 'recovery'>('calculator');
