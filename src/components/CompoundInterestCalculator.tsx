@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Text, TextField, Button } from '@toss/tds-react-native';
+import { GoogleAdMob } from '@apps-in-toss/framework';
 import TimeSeriesChart from './TimeSeriesChart';
 import LossRecoveryCalculator from './LossRecoveryCalculator';
 
-/**
- * 복리 계산기 - TDS 버전
- * 광고 기능은 샌드박스에서 지원되지 않아 제거됨
- */
+const INTERSTITIAL_AD_ID = 'ait-ad-test-interstitial-id';
+
 export default function CompoundInterestCalculator() {
   const [activeTab, setActiveTab] = useState<'calculator' | 'recovery'>('calculator');
   const [principal, setPrincipal] = useState('10000000');
@@ -16,6 +15,37 @@ export default function CompoundInterestCalculator() {
   const [monthly, setMonthly] = useState('0');
   const [result, setResult] = useState<any>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const adLoadedRef = useRef(false);
+  const adAvailableRef = useRef(false);
+
+  // 광고 로드
+  useEffect(() => {
+    loadAd();
+  }, []);
+
+  const loadAd = () => {
+    try {
+      if (!GoogleAdMob || typeof GoogleAdMob.loadAppsInTossAdMob !== 'function') {
+        adAvailableRef.current = false;
+        return;
+      }
+      adAvailableRef.current = true;
+
+      GoogleAdMob.loadAppsInTossAdMob({
+        options: { adGroupId: INTERSTITIAL_AD_ID },
+        onEvent: (event: any) => {
+          if (event.type === 'loaded') {
+            adLoadedRef.current = true;
+          }
+        },
+        onError: () => {
+          adLoadedRef.current = false;
+        },
+      });
+    } catch {
+      adAvailableRef.current = false;
+    }
+  };
 
   // 계산 수행 함수
   const performCalculation = () => {
@@ -24,10 +54,8 @@ export default function CompoundInterestCalculator() {
     const y = Number(years) || 0;
     const m = Number(monthly) || 0;
 
-    // 복리 계산
     let finalAmount = p * Math.pow(1 + r, y);
 
-    // 월 추가 투자 계산
     if (m > 0) {
       const monthlyRate = r / 12;
       const months = y * 12;
@@ -46,13 +74,36 @@ export default function CompoundInterestCalculator() {
     setIsCalculating(false);
   };
 
-  // 계산하기 버튼 클릭
+  // 계산하기 버튼 클릭 → 전면 광고 표시 후 결과
   const calculate = () => {
     setIsCalculating(true);
-    // 약간의 지연으로 로딩 애니메이션 표시
-    setTimeout(() => {
+
+    // 광고 사용 불가하거나 로드 안 됐으면 바로 계산
+    if (!adAvailableRef.current || !adLoadedRef.current) {
+      setTimeout(() => performCalculation(), 300);
+      return;
+    }
+
+    try {
+      GoogleAdMob.showAppsInTossAdMob({
+        options: { adGroupId: INTERSTITIAL_AD_ID },
+        onEvent: (event: any) => {
+          if (event.type === 'dismissed') {
+            performCalculation();
+            // 다음 광고 로드
+            adLoadedRef.current = false;
+            loadAd();
+          }
+        },
+        onError: () => {
+          performCalculation();
+          adLoadedRef.current = false;
+          loadAd();
+        },
+      });
+    } catch {
       performCalculation();
-    }, 300);
+    }
   };
 
   const formatCurrency = (value: number) => {
