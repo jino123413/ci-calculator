@@ -1,15 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Text, TextField, Button } from '@toss/tds-react-native';
-import { GoogleAdMob } from '@apps-in-toss/framework';
 import TimeSeriesChart from './TimeSeriesChart';
 import LossRecoveryCalculator from './LossRecoveryCalculator';
 
-// 테스트용 광고 ID (리워드 광고)
-const REWARDED_AD_ID = 'ait-ad-test-rewarded-id';
-
 /**
- * 복리 계산기 - TDS 버전 with 광고
+ * 복리 계산기 - TDS 버전
+ * 광고 기능은 샌드박스에서 지원되지 않아 제거됨
  */
 export default function CompoundInterestCalculator() {
   const [activeTab, setActiveTab] = useState<'calculator' | 'recovery'>('calculator');
@@ -19,40 +16,6 @@ export default function CompoundInterestCalculator() {
   const [monthly, setMonthly] = useState('0');
   const [result, setResult] = useState<any>(null);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [adLoaded, setAdLoaded] = useState(false);
-
-  // 광고 로드
-  useEffect(() => {
-    loadRewardedAd();
-  }, []);
-
-  // 리워드 광고 로드
-  const loadRewardedAd = async () => {
-    try {
-      // GoogleAdMob이 존재하는지 확인
-      if (!GoogleAdMob || typeof GoogleAdMob.loadAppsInTossAdMob !== 'function') {
-        console.log('광고 API가 지원되지 않는 환경입니다');
-        return;
-      }
-
-      await GoogleAdMob.loadAppsInTossAdMob({
-        options: {
-          adGroupId: REWARDED_AD_ID,
-        },
-        onEvent: (event) => {
-          if (event.type === 'loaded') {
-            setAdLoaded(true);
-            console.log('리워드 광고 로드 완료');
-          }
-        },
-        onError: (error) => {
-          console.error('광고 로드 실패:', error);
-        },
-      });
-    } catch (error) {
-      console.error('광고 로드 오류:', error);
-    }
-  };
 
   // 계산 수행 함수
   const performCalculation = () => {
@@ -83,50 +46,13 @@ export default function CompoundInterestCalculator() {
     setIsCalculating(false);
   };
 
-  // 계산하기 버튼 클릭 (리워드 광고 표시)
-  const calculate = async () => {
+  // 계산하기 버튼 클릭
+  const calculate = () => {
     setIsCalculating(true);
-
-    try {
-      // GoogleAdMob이 존재하지 않거나 로드되지 않았으면 바로 계산
-      if (!GoogleAdMob || typeof GoogleAdMob.showAppsInTossAdMob !== 'function' || !adLoaded) {
-        console.log('광고를 표시할 수 없습니다. 결과를 바로 표시합니다.');
-        performCalculation();
-        return;
-      }
-
-      // 리워드 광고 표시
-      GoogleAdMob.showAppsInTossAdMob({
-        options: {
-          adGroupId: REWARDED_AD_ID,
-        },
-        onEvent: (event) => {
-          if (event.type === 'userEarnedReward') {
-            console.log('보상 획득:', event.data);
-            // 광고 시청 완료 - 계산 수행
-            performCalculation();
-            // 다음 광고 로드
-            setAdLoaded(false);
-            loadRewardedAd();
-          } else if (event.type === 'dismissed') {
-            console.log('리워드 광고 닫힘');
-            // 광고를 끝까지 보지 않았으면 로딩 해제
-            if (!result) {
-              setIsCalculating(false);
-            }
-          }
-        },
-        onError: (error) => {
-          console.error('광고 표시 실패:', error);
-          // 광고 실패 시 바로 계산
-          performCalculation();
-        },
-      });
-    } catch (error) {
-      console.error('광고 표시 오류:', error);
-      // 오류 발생 시 바로 계산
+    // 약간의 지연으로 로딩 애니메이션 표시
+    setTimeout(() => {
       performCalculation();
-    }
+    }, 300);
   };
 
   const formatCurrency = (value: number) => {
