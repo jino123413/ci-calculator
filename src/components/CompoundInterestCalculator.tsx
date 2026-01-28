@@ -18,7 +18,6 @@ export default function CompoundInterestCalculator() {
   const adLoadedRef = useRef(false);
   const adAvailableRef = useRef(false);
 
-  // 광고 로드
   useEffect(() => {
     loadAd();
   }, []);
@@ -47,8 +46,36 @@ export default function CompoundInterestCalculator() {
     }
   };
 
-  // 계산 수행 함수
-  const performCalculation = () => {
+  const showAd = (callback: () => void) => {
+    if (!adAvailableRef.current || !adLoadedRef.current) {
+      callback();
+      return;
+    }
+    try {
+      GoogleAdMob.showAppsInTossAdMob({
+        options: { adGroupId: INTERSTITIAL_AD_ID },
+        onEvent: (event: any) => {
+          if (event.type === 'dismissed') {
+            callback();
+            adLoadedRef.current = false;
+            loadAd();
+          }
+        },
+        onError: () => {
+          callback();
+          adLoadedRef.current = false;
+          loadAd();
+        },
+      });
+    } catch {
+      callback();
+    }
+  };
+
+  // 계산 실행 (광고 없이 바로 실행)
+  const calculate = () => {
+    setIsCalculating(true);
+
     const p = Number(principal) || 0;
     const r = (Number(rate) || 0) / 100;
     const y = Number(years) || 0;
@@ -65,45 +92,25 @@ export default function CompoundInterestCalculator() {
     const totalPrincipal = p + m * y * 12;
     const totalInterest = finalAmount - totalPrincipal;
 
-    setResult({
-      finalAmount,
-      totalPrincipal,
-      totalInterest,
-    });
-
-    setIsCalculating(false);
+    setTimeout(() => {
+      setResult({
+        finalAmount,
+        totalPrincipal,
+        totalInterest,
+      });
+      setIsCalculating(false);
+    }, 300);
   };
 
-  // 계산하기 버튼 클릭 → 전면 광고 표시 후 결과
-  const calculate = () => {
-    setIsCalculating(true);
-
-    // 광고 사용 불가하거나 로드 안 됐으면 바로 계산
-    if (!adAvailableRef.current || !adLoadedRef.current) {
-      setTimeout(() => performCalculation(), 300);
-      return;
-    }
-
-    try {
-      GoogleAdMob.showAppsInTossAdMob({
-        options: { adGroupId: INTERSTITIAL_AD_ID },
-        onEvent: (event: any) => {
-          if (event.type === 'dismissed') {
-            performCalculation();
-            // 다음 광고 로드
-            adLoadedRef.current = false;
-            loadAd();
-          }
-        },
-        onError: () => {
-          performCalculation();
-          adLoadedRef.current = false;
-          loadAd();
-        },
-      });
-    } catch {
-      performCalculation();
-    }
+  // 새로 계산하기 (광고 표시 후 입력 초기화)
+  const handleReset = () => {
+    showAd(() => {
+      setResult(null);
+      setPrincipal('10000000');
+      setRate('5');
+      setYears('10');
+      setMonthly('0');
+    });
   };
 
   const formatCurrency = (value: number) => {
@@ -130,7 +137,7 @@ export default function CompoundInterestCalculator() {
             fontWeight={activeTab === 'calculator' ? 'bold' : 'regular'}
             style={activeTab === 'calculator' ? styles.activeTabText : styles.inactiveTabText}
           >
-            💰 복리 계산
+            복리 계산
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -142,7 +149,7 @@ export default function CompoundInterestCalculator() {
             fontWeight={activeTab === 'recovery' ? 'bold' : 'regular'}
             style={activeTab === 'recovery' ? styles.activeTabText : styles.inactiveTabText}
           >
-            📉 손실 복구 공식
+            손실 복구 공식
           </Text>
         </TouchableOpacity>
       </View>
@@ -258,6 +265,15 @@ export default function CompoundInterestCalculator() {
               {((result.totalInterest / result.totalPrincipal) * 100).toFixed(2)}%
             </Text>
           </View>
+
+          {/* 새로 계산하기 버튼 - 여기서 광고 표시 */}
+          <View style={styles.resetButtonContainer}>
+            <TouchableOpacity style={styles.resetButton} onPress={handleReset} activeOpacity={0.7}>
+              <Text typography="body2" fontWeight="bold" style={styles.resetButtonText}>
+                새로 계산하기
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -357,5 +373,18 @@ const styles = StyleSheet.create({
   },
   chartSection: {
     margin: 16,
+  },
+  resetButtonContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  resetButton: {
+    backgroundColor: '#F4F4F4',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  resetButtonText: {
+    color: '#6B7684',
   },
 });
