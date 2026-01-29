@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [
     appsInToss({
       brand: {
-        displayName: '복리 계산기',
+        displayName: '나만의 복리계산기',
         primaryColor: '#3182F6',
         icon: 'https://static.toss.im/appsintoss/16681/4eb608c8-5011-4b99-95c4-c186548afed9.png',
         bridgeColorMode: 'basic',
