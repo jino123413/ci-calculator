@@ -122,7 +122,7 @@ export default function CompoundInterestCalculator() {
       {/* 헤더 */}
       <View style={styles.header}>
         <Text typography="h4" fontWeight="bold" style={styles.headerText}>
-          복리 계산기
+          나만의 복리계산기
         </Text>
       </View>
 
