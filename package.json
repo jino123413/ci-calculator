@@ -2,7 +2,7 @@
   "name": "ci-calculator",
   "version": "1.0.1",
   "private": true,
-  "description": "복리 계산기 - Apps in Toss",
+  "description": "나만의 복리계산기 - Apps in Toss",
   "scripts": {
     "dev": "granite dev",
     "start": "react-native start",
