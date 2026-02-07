@@ -1,6 +1,6 @@
 {
   "name": "ci-calculator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "복리 계산기 - Apps in Toss",
   "scripts": {
