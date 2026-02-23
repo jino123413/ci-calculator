@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Text, TextField, Button } from '@toss/tds-react-native';
-import { GoogleAdMob } from '@apps-in-toss/framework';
+import { useState } from 'react';
+import { useInterstitialAd } from '../hooks/useInterstitialAd';
 import TimeSeriesChart from './TimeSeriesChart';
 import LossRecoveryCalculator from './LossRecoveryCalculator';
+import BannerAd from './BannerAd';
 
 const INTERSTITIAL_AD_ID = 'ait.v2.live.6a9582ec4e524364';
+const BANNER_AD_ID = 'ait.v2.live.c77420f77f184750';
 
 export default function CompoundInterestCalculator() {
   const [activeTab, setActiveTab] = useState<'calculator' | 'recovery'>('calculator');
@@ -15,64 +15,9 @@ export default function CompoundInterestCalculator() {
   const [monthly, setMonthly] = useState('0');
   const [result, setResult] = useState<any>(null);
   const [isCalculating, setIsCalculating] = useState(false);
-  const adLoadedRef = useRef(false);
-  const adAvailableRef = useRef(false);
 
-  useEffect(() => {
-    loadAd();
-  }, []);
+  const { showAd } = useInterstitialAd(INTERSTITIAL_AD_ID);
 
-  const loadAd = () => {
-    try {
-      if (!GoogleAdMob || typeof GoogleAdMob.loadAppsInTossAdMob !== 'function') {
-        adAvailableRef.current = false;
-        return;
-      }
-      adAvailableRef.current = true;
-
-      GoogleAdMob.loadAppsInTossAdMob({
-        options: { adGroupId: INTERSTITIAL_AD_ID },
-        onEvent: (event: any) => {
-          if (event.type === 'loaded') {
-            adLoadedRef.current = true;
-          }
-        },
-        onError: () => {
-          adLoadedRef.current = false;
-        },
-      });
-    } catch {
-      adAvailableRef.current = false;
-    }
-  };
-
-  const showAd = (callback: () => void) => {
-    if (!adAvailableRef.current || !adLoadedRef.current) {
-      callback();
-      return;
-    }
-    try {
-      GoogleAdMob.showAppsInTossAdMob({
-        options: { adGroupId: INTERSTITIAL_AD_ID },
-        onEvent: (event: any) => {
-          if (event.type === 'dismissed') {
-            callback();
-            adLoadedRef.current = false;
-            loadAd();
-          }
-        },
-        onError: () => {
-          callback();
-          adLoadedRef.current = false;
-          loadAd();
-        },
-      });
-    } catch {
-      callback();
-    }
-  };
-
-  // 계산 실행 (광고 없이 바로 실행)
   const calculate = () => {
     setIsCalculating(true);
 
@@ -102,14 +47,15 @@ export default function CompoundInterestCalculator() {
     }, 300);
   };
 
-  // 새로 계산하기 (광고 표시 후 입력 초기화)
   const handleReset = () => {
-    showAd(() => {
-      setResult(null);
-      setPrincipal('10000000');
-      setRate('5');
-      setYears('10');
-      setMonthly('0');
+    showAd({
+      onDismiss: () => {
+        setResult(null);
+        setPrincipal('10000000');
+        setRate('5');
+        setYears('10');
+        setMonthly('0');
+      },
     });
   };
 
@@ -118,273 +64,165 @@ export default function CompoundInterestCalculator() {
   };
 
   return (
-    <View style={styles.container}>
+    <div className="flex-1 min-h-screen bg-[#f5f5f5]">
       {/* 헤더 */}
-      <View style={styles.header}>
-        <Text typography="h4" fontWeight="bold" style={styles.headerText}>
-          나만의 복리계산기
-        </Text>
-      </View>
+      <div className="bg-primary py-5 px-5 pt-6 flex items-center justify-center">
+        <h2 className="text-white font-bold text-lg">나만의 복리계산기</h2>
+      </div>
 
       {/* 탭 메뉴 */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'calculator' && styles.activeTab]}
-          onPress={() => setActiveTab('calculator')}
+      <div className="flex bg-white border-b border-[#e9ecef]">
+        <button
+          className={`flex-1 py-4 text-center text-sm border-b-2 transition-colors ${
+            activeTab === 'calculator'
+              ? 'border-primary text-primary font-bold'
+              : 'border-transparent text-[#6B7684]'
+          }`}
+          onClick={() => setActiveTab('calculator')}
         >
-          <Text
-            typography="body2"
-            fontWeight={activeTab === 'calculator' ? 'bold' : 'regular'}
-            style={activeTab === 'calculator' ? styles.activeTabText : styles.inactiveTabText}
-          >
-            복리 계산
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'recovery' && styles.activeTab]}
-          onPress={() => setActiveTab('recovery')}
+          복리 계산
+        </button>
+        <button
+          className={`flex-1 py-4 text-center text-sm border-b-2 transition-colors ${
+            activeTab === 'recovery'
+              ? 'border-primary text-primary font-bold'
+              : 'border-transparent text-[#6B7684]'
+          }`}
+          onClick={() => setActiveTab('recovery')}
         >
-          <Text
-            typography="body2"
-            fontWeight={activeTab === 'recovery' ? 'bold' : 'regular'}
-            style={activeTab === 'recovery' ? styles.activeTabText : styles.inactiveTabText}
-          >
-            손실 복구 공식
-          </Text>
-        </TouchableOpacity>
-      </View>
+          손실 복구 공식
+        </button>
+      </div>
 
       {/* 탭 콘텐츠 */}
       {activeTab === 'calculator' ? (
-        <ScrollView style={styles.tabContent}>
+        <div className="flex-1 overflow-y-auto pb-8">
+          {/* 입력 섹션 */}
+          <div className="bg-white m-4 mt-4 p-5 rounded-xl shadow-sm">
+            <h3 className="font-bold text-base mb-4">투자 정보 입력</h3>
 
-      {/* 입력 섹션 */}
-      <View style={[styles.card, { marginTop: 16 }]}>
-        <Text typography="h6" fontWeight="bold" style={styles.cardTitle}>
-          투자 정보 입력
-        </Text>
+            <div className="mb-4">
+              <label className="block text-xs text-[#6B7684] mb-1.5">초기 투자금 (원)</label>
+              <input
+                type="number"
+                className="w-full bg-[#F8F9FA] rounded-lg px-4 py-3 text-base outline-none border border-transparent focus:border-primary transition-colors"
+                value={principal}
+                onChange={(e) => setPrincipal(e.target.value)}
+                placeholder="10000000"
+              />
+            </div>
 
-        <View style={styles.inputGroup}>
-          <TextField
-            variant="box"
-            label="초기 투자금 (원)"
-            value={principal}
-            onChangeText={setPrincipal}
-            keyboardType="number-pad"
-            placeholder="10000000"
-          />
-        </View>
+            <div className="mb-4">
+              <label className="block text-xs text-[#6B7684] mb-1.5">연 수익률 (%)</label>
+              <input
+                type="number"
+                className="w-full bg-[#F8F9FA] rounded-lg px-4 py-3 text-base outline-none border border-transparent focus:border-primary transition-colors"
+                value={rate}
+                onChange={(e) => setRate(e.target.value)}
+                placeholder="5"
+              />
+            </div>
 
-        <View style={styles.inputGroup}>
-          <TextField
-            variant="box"
-            label="연 수익률 (%)"
-            value={rate}
-            onChangeText={setRate}
-            keyboardType="decimal-pad"
-            placeholder="5"
-          />
-        </View>
+            <div className="mb-4">
+              <label className="block text-xs text-[#6B7684] mb-1.5">투자 기간 (년)</label>
+              <input
+                type="number"
+                className="w-full bg-[#F8F9FA] rounded-lg px-4 py-3 text-base outline-none border border-transparent focus:border-primary transition-colors"
+                value={years}
+                onChange={(e) => setYears(e.target.value)}
+                placeholder="10"
+              />
+            </div>
 
-        <View style={styles.inputGroup}>
-          <TextField
-            variant="box"
-            label="투자 기간 (년)"
-            value={years}
-            onChangeText={setYears}
-            keyboardType="number-pad"
-            placeholder="10"
-          />
-        </View>
+            <div className="mb-4">
+              <label className="block text-xs text-[#6B7684] mb-1.5">월 추가 투자 (원)</label>
+              <input
+                type="number"
+                className="w-full bg-[#F8F9FA] rounded-lg px-4 py-3 text-base outline-none border border-transparent focus:border-primary transition-colors"
+                value={monthly}
+                onChange={(e) => setMonthly(e.target.value)}
+                placeholder="0"
+              />
+            </div>
 
-        <View style={styles.inputGroup}>
-          <TextField
-            variant="box"
-            label="월 추가 투자 (원)"
-            value={monthly}
-            onChangeText={setMonthly}
-            keyboardType="number-pad"
-            placeholder="0"
-          />
-        </View>
+            <button
+              className="w-full bg-primary text-white font-bold py-3.5 rounded-xl text-base disabled:opacity-50 active:opacity-80 transition-opacity"
+              onClick={calculate}
+              disabled={isCalculating}
+            >
+              {isCalculating ? '계산 중...' : '계산하기'}
+            </button>
+          </div>
 
-        <Button size="large" onPress={calculate} disabled={isCalculating}>
-          {isCalculating ? '계산 중...' : '계산하기'}
-        </Button>
-      </View>
+          {/* 로딩 인디케이터 */}
+          {isCalculating && (
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-[#6B7684] mt-3">계산 중...</p>
+            </div>
+          )}
 
-      {/* 로딩 인디케이터 */}
-      {isCalculating && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3182F6" />
-          <Text typography="body2" style={[styles.greyText, { marginTop: 12 }]}>
-            계산 중...
-          </Text>
-        </View>
-      )}
+          {/* 결과 섹션 */}
+          {result && !isCalculating && (
+            <div className="bg-white mx-4 p-5 rounded-xl shadow-sm">
+              <h3 className="font-bold text-base mb-4">계산 결과</h3>
 
-      {/* 결과 섹션 */}
-      {result && !isCalculating && (
-        <View style={styles.card}>
-          <Text typography="h6" fontWeight="bold" style={styles.cardTitle}>
-            계산 결과
-          </Text>
+              <div className="flex justify-between items-center py-3 border-b border-[#f0f0f0]">
+                <span className="text-sm text-[#6B7684]">최종 금액</span>
+                <span className="font-semibold">{formatCurrency(result.finalAmount)}</span>
+              </div>
 
-          <View style={styles.resultRow}>
-            <Text typography="body2" style={styles.greyText}>
-              최종 금액
-            </Text>
-            <Text typography="body1" fontWeight="semiBold">
-              {formatCurrency(result.finalAmount)}
-            </Text>
-          </View>
+              <div className="flex justify-between items-center py-3 border-b border-[#f0f0f0]">
+                <span className="text-sm text-[#6B7684]">총 투자 원금</span>
+                <span className="font-semibold">{formatCurrency(result.totalPrincipal)}</span>
+              </div>
 
-          <View style={styles.resultRow}>
-            <Text typography="body2" style={styles.greyText}>
-              총 투자 원금
-            </Text>
-            <Text typography="body1" fontWeight="semiBold">
-              {formatCurrency(result.totalPrincipal)}
-            </Text>
-          </View>
+              <div className="flex justify-between items-center py-3 border-b border-[#f0f0f0]">
+                <span className="text-sm text-[#6B7684]">총 수익 (이자)</span>
+                <span className="font-semibold text-primary">{formatCurrency(result.totalInterest)}</span>
+              </div>
 
-          <View style={styles.resultRow}>
-            <Text typography="body2" style={styles.greyText}>
-              총 수익 (이자)
-            </Text>
-            <Text typography="body1" fontWeight="semiBold" style={styles.blueText}>
-              {formatCurrency(result.totalInterest)}
-            </Text>
-          </View>
+              <div className="flex justify-between items-center py-3 border-b border-[#f0f0f0]">
+                <span className="text-sm text-[#6B7684]">수익률</span>
+                <span className="font-semibold text-primary">
+                  {((result.totalInterest / result.totalPrincipal) * 100).toFixed(2)}%
+                </span>
+              </div>
 
-          <View style={styles.resultRow}>
-            <Text typography="body2" style={styles.greyText}>
-              수익률
-            </Text>
-            <Text typography="body1" fontWeight="semiBold" style={styles.blueText}>
-              {((result.totalInterest / result.totalPrincipal) * 100).toFixed(2)}%
-            </Text>
-          </View>
+              {/* 새로 계산하기 버튼 */}
+              <div className="mt-5 flex justify-center">
+                <button
+                  className="bg-[#F4F4F4] px-6 py-3 rounded-lg active:opacity-70 transition-opacity"
+                  onClick={handleReset}
+                >
+                  <span className="text-sm font-bold text-[#6B7684]">새로 계산하기</span>
+                </button>
+              </div>
+            </div>
+          )}
 
-          {/* 새로 계산하기 버튼 - 여기서 광고 표시 */}
-          <View style={styles.resetButtonContainer}>
-            <TouchableOpacity style={styles.resetButton} onPress={handleReset} activeOpacity={0.7}>
-              <Text typography="body2" fontWeight="bold" style={styles.resetButtonText}>
-                새로 계산하기
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+          {/* 배너 광고 */}
+          {result && !isCalculating && (
+            <div className="mx-4 mt-4">
+              <BannerAd adGroupId={BANNER_AD_ID} />
+            </div>
+          )}
 
-      {/* 시계열 그래프 섹션 */}
-      {result && !isCalculating && (
-        <View style={styles.chartSection}>
-          <TimeSeriesChart
-            principal={Number(principal)}
-            rate={Number(rate)}
-            years={Number(years)}
-            monthly={Number(monthly)}
-          />
-        </View>
-      )}
-        </ScrollView>
+          {/* 시계열 그래프 섹션 */}
+          {result && !isCalculating && (
+            <div className="mx-4 mt-4">
+              <TimeSeriesChart
+                principal={Number(principal)}
+                rate={Number(rate)}
+                years={Number(years)}
+                monthly={Number(monthly)}
+              />
+            </div>
+          )}
+        </div>
       ) : (
         <LossRecoveryCalculator />
       )}
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#3182F6',
-    padding: 20,
-    paddingTop: 24,
-    alignItems: 'center',
-  },
-  headerText: {
-    color: '#FFFFFF',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  activeTab: {
-    borderBottomColor: '#3182F6',
-  },
-  activeTabText: {
-    color: '#3182F6',
-  },
-  inactiveTabText: {
-    color: '#6B7684',
-  },
-  tabContent: {
-    flex: 1,
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    margin: 16,
-    padding: 20,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardTitle: {
-    marginBottom: 16,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  resultRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  greyText: {
-    color: '#6B7684',
-  },
-  blueText: {
-    color: '#3182F6',
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  chartSection: {
-    margin: 16,
-  },
-  resetButtonContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  resetButton: {
-    backgroundColor: '#F4F4F4',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  resetButtonText: {
-    color: '#6B7684',
-  },
-});
